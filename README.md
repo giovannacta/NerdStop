@@ -26,4 +26,5 @@ The app will allow users to:
   - MongoDB: To store products, users and orders information.
     
 **Version Control:** GitHub for code collaboration.
+
 **Stripe API** for payment integration.
