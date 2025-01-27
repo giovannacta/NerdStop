@@ -16,11 +16,14 @@ The app will allow users to:
 **Frontend:**
   - React.js for UI components.
   - React Router for navigation.
-  - Tailwind CSS
+  - Tailwind CSS.
+
 **Backend:**
   - Node.js with Express.js
   - JWT for user authentication.
+    
 **Database:**
   - MongoDB: To store products, users and orders information.
+    
 **Version Control:** GitHub for code collaboration.
-**Stripe API** for payment integration
+**Stripe API** for payment integration.
