@@ -1,4 +1,4 @@
-# NerdStop
+# NerdStop (In Progress)
 
 The geek and gaming products market is rapidly growing, but many e-commerce platforms feature complicated interfaces or lack personalization. NerdStop aims to address this by offering an intuitive, interactive platform for pop culture fans, nerds, and gamers, delivering a streamlined shopping experience with an appealing design.
 
