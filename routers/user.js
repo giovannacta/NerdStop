@@ -2,14 +2,14 @@ import express from "express";
 import User from "../models/user.js";
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  const users = User.find();
+router.get('/', async (req, res) => {
+  const users = await User.find();
 
   res.status(200).json(users);
 });
 
-router.post("/user", (req, res) => {
-  const user = User.create({
+router.post('/', async (req, res) => {
+  const createUser = await User.create({
     user_id: req.body.user_id,
     name: req.body.name,
     email: req.body.email,
@@ -17,7 +17,31 @@ router.post("/user", (req, res) => {
     created_at: req.body.created_at,
   });
 
-  res.status(201).json(user);
+  res.status(201).json(createUser);
 });
+
+router.put('/:id', async (req, res) => {
+  const updateUser = await User.findByIdAndUpdate(req.params.id, {
+    name: req.body.name,
+    email: req.body.email
+  }, { new: true });
+
+  if (!updateUser) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  res.status(200).json(updateUser);
+})
+
+router.delete('/:id', async (req, res) => {
+  const deleteUser = await User.findByIdAndDelete(req.params.id);
+
+  if (!deleteUser) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  res.status(204).send();
+})
+
 
 export default router;
