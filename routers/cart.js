@@ -18,7 +18,6 @@ router.post('/', async (req, res) => {
     }
 
     const createCart = await Cart.create({
-        cart_id: req.body.cart_id,
         user_id: req.body.user_id,
     })
     console.log("Cart created", createCart)

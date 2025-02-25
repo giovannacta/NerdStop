@@ -18,9 +18,7 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
     const category = await Category.create({
-        category_id: req.body.category_id,
-        name: req.body.name,
-        created_at: req.body.created_at
+        name: req.body.name
     })
     res.status(201).json(category)
 })
@@ -39,7 +37,7 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     const deleteCategory = await Category.findByIdAndDelete(req.params.id)
-    res.status(204).send()
+    res.status(204).send(deleteCategory)
 })
 
 export default router;

@@ -18,7 +18,6 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
     const order = await Order.create({
-        order_id: req.body.order_id,
         user_id: req.body.user_id,
         total_price: req.body.total_price,
         status: req.body.status,

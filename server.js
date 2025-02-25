@@ -19,6 +19,7 @@ import orderRouter from "./routers/order.js";
 import cartRouter from "./routers/cart.js";
 import categoryRouter from "./routers/category.js";
 import cartItemRouter from "./routers/cart_item.js";
+//import paymentRouter from "./routers/payment.js";
 
 
 app.use('/product', productRouter)
@@ -27,6 +28,7 @@ app.use('/order', orderRouter)
 app.use('/cart', cartRouter)
 app.use('/category', categoryRouter)
 app.use('/cart_item', cartItemRouter)
+//app.use('/payment', paymentRouter)
 
 
 
