@@ -3,14 +3,19 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import cors from "cors";
+import authJwt from "./auth.js";
+import errorHandler from "./error-handler.js";
 
 
+//MIddleware
 dotenv.config();
 const app = express();
 app.use(cors());
 app.options("*", cors());
 app.use(express.json());
 app.use(morgan("tiny"));
+
+
 
 //ROUTERS
 import productRouter from "./routers/product.js";
@@ -19,15 +24,18 @@ import orderRouter from "./routers/order.js";
 import cartRouter from "./routers/cart.js";
 import categoryRouter from "./routers/category.js";
 import cartItemRouter from "./routers/cart_item.js";
+
 //import paymentRouter from "./routers/payment.js";
 
-
-app.use('/product', productRouter)
 app.use('/user', userRouter)
+app.use(authJwt());
+app.use(errorHandler);
+app.use('/product', productRouter)
 app.use('/order', orderRouter)
 app.use('/cart', cartRouter)
 app.use('/category', categoryRouter)
 app.use('/cart_item', cartItemRouter)
+
 //app.use('/payment', paymentRouter)
 
 

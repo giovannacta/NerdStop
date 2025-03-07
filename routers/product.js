@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import Product from "../models/product.js";
 import Category from "../models/category.js";
 
@@ -35,6 +36,7 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
+  
   const updateProduct = await Product.findByIdAndUpdate(
     req.params.id,
     {
