@@ -1,80 +1,106 @@
 import express from "express";
 import User from "../models/user.js";
-const router = express.Router();
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-router.get('/', async (req, res) => {
-  const users = await User.find().select('-password');
+const router = express.Router();
 
-  res.status(200).json(users);
+
+router.get("/", async (req, res) => {
+  try {
+    const users = await User.find().select("-password");
+    res.status(200).json(users);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching users", error: error.message });
+  }
 });
 
-router.post('/', async (req, res) => {
-  const createUser = await User.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: bcrypt.hashSync(req.body.password, 8),
-    isAdmin: req.body.isAdmin,
-    phone: req.body.phone,
-    street: req.body.street,
-    apartment: req.body.apartment,
-    city: req.body.city,
-    state: req.body.state,
-    zip: req.body.zip,
-    country: req.body.country,
-    created_at: req.body.created_at,
-  });
+// (Signup)
+router.post("/", async (req, res) => {
+  try {
+    const {
+      email,
+      password,
+      name,
+      isAdmin,
+      phone,
+      street,
+      apartment,
+      city,
+      state,
+      zip,
+      country,
+    } = req.body;
 
-  res.status(201).json(createUser);
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already in use" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 8);
+    const newUser = await User.create({
+      name,
+      email: email.toLowerCase(),
+      password: hashedPassword,
+      isAdmin: isAdmin || false,
+      phone,
+      street,
+      apartment,
+      city,
+      state,
+      zip,
+      country,
+      created_at: new Date(),
+    });
+
+    res
+      .status(201)
+      .json({ message: "User created successfully!", user: newUser });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error creating user", error: error.message });
+  }
 });
 
-router.put('/:id', async (req, res) => {
-  const updateUser = await User.findByIdAndUpdate(req.params.id, {
-    name: req.body.name,
-    email: req.body.email
-  }, { new: true });
+// Login
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const secret = process.env.SECRET || "default_secret";
 
-  if (!updateUser) {
-    return res.status(404).json({ message: 'User not found' });
-  }
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
+    }
 
-  res.status(200).json(updateUser);
-})
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
 
-router.delete('/:id', async (req, res) => {
-  const deleteUser = await User.findByIdAndDelete(req.params.id);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
 
-  if (!deleteUser) {
-    return res.status(404).json({ message: 'User not found' });
-  }
-
-  res.status(204).send();
-})
-
-router.post('/login', async (req, res) => {
-  const secret = process.env.SECRET
-  const user = await User.findOne({
-    email: req.body.email.toLowerCase()
-  });
-
-  if(!user) {
-    return res.status(404).json({ message: 'User not found' });
-  }
-
-  if (user && bcrypt.compareSync(req.body.password, user.password)) {
+    
     const token = jwt.sign(
-      {
-        userId: user.id,
-        isAdmin: user.isAdmin
-      },
+      { userId: user._id, isAdmin: user.isAdmin },
       secret,
-      { expiresIn: '2d' }
+      { expiresIn: "2d" }
     );
 
-    res.status(200).send({user: user.email, token: token});
-  } else {
-    return res.status(401).send("Invalid email or password");
+    res.status(200).json({
+      message: "Login successful",
+      user: { id: user._id, email: user.email, isAdmin: user.isAdmin },
+      token,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error logging in", error: error.message });
   }
 });
 

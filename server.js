@@ -6,18 +6,14 @@ import cors from "cors";
 import authJwt from "./auth.js";
 import errorHandler from "./error-handler.js";
 
-
-//MIddleware
 dotenv.config();
+
 const app = express();
 app.use(cors());
-app.options("*", cors());
 app.use(express.json());
 app.use(morgan("tiny"));
 
-
-
-//ROUTERS
+// Import routers
 import productRouter from "./routers/product.js";
 import userRouter from "./routers/user.js";
 import orderRouter from "./routers/order.js";
@@ -25,24 +21,21 @@ import cartRouter from "./routers/cart.js";
 import categoryRouter from "./routers/category.js";
 import cartItemRouter from "./routers/cart_item.js";
 
-//import paymentRouter from "./routers/payment.js";
+// Public Routes (No Token)
+app.use("/api/users", userRouter);
+app.use("/api/products", productRouter);
+app.use("/api/categories", categoryRouter);
 
-app.use('/user', userRouter)
-app.use(authJwt());
+// Auth Middleware
+app.use(authJwt()); 
 app.use(errorHandler);
-app.use('/product', productRouter)
-app.use('/order', orderRouter)
-app.use('/cart', cartRouter)
-app.use('/category', categoryRouter)
-app.use('/cart_item', cartItemRouter)
 
-//app.use('/payment', paymentRouter)
+// Protected Routes (Token Required)
+app.use("/api/orders", orderRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/cart_items", cartItemRouter);
 
-
-
-
-//Connect and Mongoose Schema
-
+// connect to MongoDB
 mongoose
   .connect(process.env.DATABASE_URL, {
     useNewUrlParser: true,
@@ -52,8 +45,6 @@ mongoose
   .catch((err) => console.error("Error connecting to MongoDB", err));
 
 
-
-
 app.listen(3000, () => {
-  console.log("Server running http://localhost:3000");
+  console.log("Server running on http://localhost:3000");
 });

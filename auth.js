@@ -1,27 +1,27 @@
 import { expressjwt } from "express-jwt";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 function authJwt() {
-    const secret = process.env.SECRET;
-    return expressjwt({
-        secret,
-        algorithms: ['HS256'],
-        isRevoked: isRevoked
-    }).unless({
-        path: [
-            { url: "/products(.*)", methods: ["GET", "OPTIONS"] },
-            { url: "/categories(.*)", methods: ["GET", "OPTIONS"] },
-            { url: "/user/login", methods: ["POST"] },
-            { url: "/user", methods: ["POST"] },
-        ],
-    });
+  const secret = process.env.SECRET;
+
+  return expressjwt({
+    secret,
+    algorithms: ["HS256"],
+    isRevoked: isRevoked,
+  }).unless({
+    path: [
+      { url: "/api/products", methods: ["GET", "OPTIONS"] },
+      { url: "/api/categories", methods: ["GET", "OPTIONS"] },
+      { url: "/api/users", methods: ["POST"] }, 
+      { url: "/api/users/login", methods: ["POST"] }, 
+    ],
+  });
 }
 
 async function isRevoked(req, token) {
-    if (!token.payload.isAdmin) {
-        return true; 
-    }
-    return false; 
+  return !token.payload; 
 }
-
 
 export default authJwt;
